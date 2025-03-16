@@ -1,16 +1,81 @@
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot</title>
+    <title>Chatbot Salvita</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        
+        #chatContainer {
+            width: 400px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        
+        #chatBox {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: white;
+        }
+        
+        input {
+            width: 80%;
+            padding: 5px;
+        }
+        
+        button {
+            padding: 5px 10px;
+        }
+    </style>
 </head>
+
 <body>
-    <!-- Incrustar el chatbot con iframe y acceso al micrófono -->
-    <iframe 
-        allow="microphone;" 
-        width="350" 
-        height="430" 
-        src="https://console.dialogflow.com/api-client/demo/embedded/8079217e-11e3-4437-9dc6-016dd86f39f4">
-    </iframe>
+
+    <h1>Bienvenido a Salvita</h1>
+    <p>Puedes hablar con nuestro asistente virtual aquí:</p>
+
+    <div id="chatContainer">
+        <div id="chatBox"></div>
+        <input type="text" id="userInput" placeholder="Escribe tu mensaje...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let userMessage = document.getElementById("userInput").value;
+            if (userMessage.trim() === "") return;
+
+            let chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML += `<p><strong>Tú:</strong> ${userMessage}</p>`;
+
+            let response = await fetch("/chatbot", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                    session: "123456"
+                })
+            });
+
+            let data = await response.json();
+            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.reply}</p>`;
+            document.getElementById("userInput").value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+
 </body>
+
 </html>
